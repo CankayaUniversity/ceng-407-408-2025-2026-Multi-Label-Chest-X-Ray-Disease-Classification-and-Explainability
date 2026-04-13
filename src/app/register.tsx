@@ -21,7 +21,7 @@ import DoctorImg from "../../assets/doctor.png";
 const { height } = Dimensions.get("window");
 
 // BİLGİSAYARININ IP ADRESİ
-const API_URL = "http://192.168.0.14:5000/api";
+const API_URL = "http://192.168.1.90:8000/auth";
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -29,6 +29,7 @@ export default function RegisterScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const [hospitals, setHospitals] = useState([]);
   const [selectedHospital, setSelectedHospital] = useState("");
@@ -49,7 +50,8 @@ export default function RegisterScreen() {
   }, []);
 
   const handleRegister = async () => {
-    if (!name || !email || !password || !selectedHospital) {
+    // 1. KONTROL: Tüm alanlar dolu mu? (confirmPassword'ü de ekledik)
+    if (!name || !email || !password || !confirmPassword || !selectedHospital) {
       Alert.alert(
         "Eksik Bilgi",
         "Lütfen tüm alanları doldurun ve hastane seçin.",
@@ -57,19 +59,29 @@ export default function RegisterScreen() {
       return;
     }
 
+    // 2. YENİ KONTROL: Şifreler birbiriyle aynı mı?
+    if (password !== confirmPassword) {
+      Alert.alert(
+        "Hata",
+        "Girdiğiniz şifreler birbiriyle uyuşmuyor! Lütfen kontrol edin."
+      );
+      return; // Şifreler uyuşmuyorsa işlemi burada kes, backend'e gitme!
+    }
+
     try {
+      // DİKKAT: Backend'e sadece 'password' gönderiyoruz, confirmPassword'e gerek yok!
       const response = await axios.post(`${API_URL}/register`, {
-        name,
-        email,
-        password,
-        hospitalId: selectedHospital,
+        name_surname: name,                  
+        email: email,
+        password: password, 
+        hospital: getSelectedHospitalName(), 
       });
 
       Alert.alert("Başarılı!", response.data.message);
       router.replace("/");
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert("Hata", "Kayıt işlemi başarısız oldu.");
-      console.error(error);
+      console.log("🚨 422 HATA DETAYI:", error.response?.data?.detail);
     }
   };
 
@@ -143,6 +155,14 @@ export default function RegisterScreen() {
                   secureTextEntry
                   value={password}
                   onChangeText={setPassword}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Şifre Tekrar"
+                  placeholderTextColor="rgba(255,255,255,0.4)"
+                  secureTextEntry
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
                 />
 
                 {/* YENİ HASTANE SEÇİM BUTONU (Tıklanınca Modal Açılır) */}

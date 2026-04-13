@@ -27,13 +27,13 @@ cd ..
 backend klasörü içinde bir .env dosyası oluşturun ve içine size ilettiğim MONGO_URI bilgisini yapıştırın:
 
 Plaintext
-PORT=5000
+PORT=8000
 MONGO_URI=mongodb+srv://... (Buraya bağlantı linki gelecek)
 3. API IP Yapılandırması:
 Mobil cihazdan (Expo Go) bağlanabilmeniz için src/app/register.tsx (ve login ekranı) içindeki API_URL değişkenine kendi bilgisayarınızın yerel IP adresini yazmalısınız:
 
 JavaScript
-const API_URL = "[http://192.168.](http://192.168.)x.x:5000/api";
+const API_URL = "http://172.20.10.2:8000";
 4. Projeyi Başlatın:
 İki ayrı terminal açın:
 
