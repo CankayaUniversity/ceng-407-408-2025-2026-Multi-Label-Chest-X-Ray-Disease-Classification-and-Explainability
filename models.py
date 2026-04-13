@@ -4,10 +4,10 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 class RegisterRequest(BaseModel):
-    full_name: str
-    email: EmailStr
-    password: str
-    role: str = "doctor"
+    name_surname: str    
+    email: EmailStr      
+    password: str        
+    hospital: str
 
 class LoginRequest(BaseModel):
     email: EmailStr
