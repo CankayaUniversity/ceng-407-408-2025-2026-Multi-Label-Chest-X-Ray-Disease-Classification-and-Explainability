@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { loginDoctorLocal } from "../services/storageService";
+import { loginDoctor } from "../services/authService";
 
 export default function DoctorLoginScreen() {
   const router = useRouter();
@@ -30,25 +30,19 @@ export default function DoctorLoginScreen() {
     try {
       setIsSubmitting(true);
 
-      const result = await loginDoctorLocal(email, password);
+      const result = await loginDoctor({
+        email: email.trim().toLowerCase(),
+        password: password.trim(),
+      });
 
-      if (!result.success) {
-        Alert.alert("Giriş Başarısız", result.message || "Bir hata oluştu.");
-        return;
-      }
-
-      if (result.status === "approved") {
+      if (result.role === "doctor") {
         router.replace("/home");
-      } else if (result.status === "pending") {
-        router.replace("/pending-approval");
-      } else if (result.status === "rejected") {
-        router.replace("/rejected-account");
       } else {
-        Alert.alert("Hata", "Geçersiz kullanıcı durumu.");
+        Alert.alert("Yetki Hatası", "Bu kullanıcı doktor değil.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Doctor login error:", error);
-      Alert.alert("Hata", "Giriş işlemi sırasında bir sorun oluştu.");
+      Alert.alert("Giriş Başarısız", error.message || "Bir hata oluştu.");
     } finally {
       setIsSubmitting(false);
     }
@@ -77,8 +71,7 @@ export default function DoctorLoginScreen() {
 
             <Text style={styles.title}>Doktor Girişi</Text>
             <Text style={styles.subtitle}>
-              Hesabınızın onay durumuna göre uygun ekrana otomatik olarak
-              yönlendirileceksiniz.
+              Onaylı hesabınızla sisteme giriş yapabilirsiniz.
             </Text>
 
             <TextInput
