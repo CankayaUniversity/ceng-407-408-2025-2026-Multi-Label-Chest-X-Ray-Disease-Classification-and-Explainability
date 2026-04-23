@@ -1,184 +1,139 @@
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
-  Dimensions,
-  ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
+  SafeAreaView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import XrayImg from "../../assets/xray_img.png";
 
-const { height } = Dimensions.get("window");
-
-export default function LoginScreen() {
+export default function EntrySelectionScreen() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  // Giriş kontrol fonksiyonu (admin/admin için)
-  const handleLogin = () => {
-    const cleanEmail = email.trim().toLowerCase();
-    const cleanPassword = password.trim();
-
-    if (cleanEmail === "admin" && cleanPassword === "admin") {
-      router.replace("/home");
-    } else {
-      alert("Hatalı giriş! (E-posta: admin, Şifre: admin)");
-    }
-  };
 
   return (
-    <View style={styles.mainContainer}>
-      <ImageBackground
-        source={XrayImg}
+    <View style={styles.container}>
+      <LinearGradient
+        colors={["#071836", "#0D47A1"]}
         style={StyleSheet.absoluteFill}
-        resizeMode="cover"
       />
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          bounces={false}
-        >
-          <View style={{ height: height * 0.45 }} />
-
-          <View style={styles.sheetContainer}>
-            <LinearGradient
-              colors={[
-                "transparent",
-                "rgb(8, 37, 86)",
-                "rgba(95, 120, 161, 0.78)",
-                "#071836",
-              ]}
-              style={styles.sheetBackground}
-            >
-              <View style={styles.handleBar} />
-
-              <View style={styles.headerArea}>
-                <Text style={styles.brandName}>CHESTXPLAIN</Text>
-                <Text style={styles.tagline}>
-                  AI-Powered Radiology Assistant
-                </Text>
-              </View>
-
-              <View style={styles.glassCard}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="E-posta Adresi"
-                  placeholderTextColor="rgba(255,255,255,0.4)"
-                  value={email}
-                  onChangeText={setEmail}
-                  autoCapitalize="none" // admin yazarken büyük harf hatasını önler
-                  autoCorrect={false}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Şifre"
-                  placeholderTextColor="rgba(255,255,255,0.4)"
-                  secureTextEntry
-                  value={password}
-                  onChangeText={setPassword}
-                  autoCapitalize="none"
-                />
-
-                <TouchableOpacity
-                  style={styles.primaryBtn}
-                  onPress={handleLogin} // Yeni kontrol fonksiyonu
-                >
-                  <Text style={styles.btnText}>Giriş Yap</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => router.push("/register")}
-                  style={styles.footerLink}
-                >
-                  <Text style={styles.linkText}>
-                    Hesabın yok mu?{" "}
-                    <Text style={{ fontWeight: "bold" }}>Kaydol</Text>
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={{ height: 150 }} />
-            </LinearGradient>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.content}>
+          <View style={styles.heroBox}>
+            <Text style={styles.brand}>CHESTXPLAIN</Text>
+            <Text style={styles.subtitle}>
+              Multi-Label Chest X-Ray Disease Classification and Explainability
+            </Text>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+
+          <View style={styles.card}>
+            <Text style={styles.title}>Giriş Türünü Seçin</Text>
+            <Text style={styles.description}>
+              Sisteme doktor olarak giriş yapabilir veya hastane panelinden
+              bekleyen doktor başvurularını yönetebilirsiniz.
+            </Text>
+
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={() => router.push("/doctor-login")}
+            >
+              <Ionicons name="medkit-outline" size={22} color="#071836" />
+              <Text style={styles.primaryButtonText}>Doktor Girişi</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.secondaryButton}
+              onPress={() => router.push("/hospital-login")}
+            >
+              <Ionicons name="business-outline" size={22} color="#fff" />
+              <Text style={styles.secondaryButtonText}>Hastane Girişi</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: { flex: 1, backgroundColor: "#000" },
-  scrollContent: { flexGrow: 1 },
-  sheetContainer: {
+  container: { flex: 1 },
+  safeArea: { flex: 1 },
+  content: {
     flex: 1,
-    backgroundColor: "transparent",
+    justifyContent: "center",
+    paddingHorizontal: 24,
   },
-  sheetBackground: {
-    flex: 1,
-    paddingHorizontal: 25,
-    paddingTop: 15,
-    minHeight: height * 0.6,
+  heroBox: {
+    marginBottom: 30,
+    alignItems: "center",
   },
-  handleBar: {
-    width: 40,
-    height: 4,
-    backgroundColor: "rgba(255,255,255,0.15)",
-    borderRadius: 10,
-    alignSelf: "center",
-    marginBottom: 20,
-  },
-  headerArea: { alignItems: "center", marginBottom: 25 },
-  brandName: {
+  brand: {
+    color: "#fff",
     fontSize: 32,
     fontWeight: "200",
-    color: "#fff",
     letterSpacing: 6,
+    textAlign: "center",
   },
-  tagline: {
-    color: "rgba(255,255,255,0.4)",
-    fontSize: 11,
-    letterSpacing: 1.5,
-    marginTop: 5,
+  subtitle: {
+    color: "rgba(255,255,255,0.58)",
+    textAlign: "center",
+    marginTop: 14,
+    lineHeight: 22,
+    fontSize: 14,
   },
-  glassCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
+  card: {
+    backgroundColor: "rgba(255,255,255,0.08)",
     borderRadius: 30,
-    padding: 25,
+    padding: 24,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: "rgba(255,255,255,0.12)",
   },
-  input: {
-    height: 50,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255,255,255,0.15)",
+  title: {
     color: "#fff",
-    fontSize: 15,
-    marginBottom: 15,
-    paddingHorizontal: 5,
+    fontSize: 26,
+    fontWeight: "700",
+    textAlign: "center",
   },
-  primaryBtn: {
-    height: 52,
+  description: {
+    color: "rgba(255,255,255,0.65)",
+    textAlign: "center",
+    fontSize: 14,
+    lineHeight: 22,
+    marginTop: 12,
+    marginBottom: 26,
+  },
+  primaryButton: {
+    height: 56,
+    borderRadius: 16,
     backgroundColor: "#fff",
-    borderRadius: 15,
-    justifyContent: "center",
     alignItems: "center",
-    marginTop: 15,
+    justifyContent: "center",
+    flexDirection: "row",
+    marginBottom: 14,
   },
-  btnText: { color: "#071836", fontWeight: "bold", fontSize: 16 },
-  footerLink: { alignItems: "center", marginTop: 25 },
-  linkText: { color: "rgba(255,255,255,0.8)", fontSize: 14 },
+  primaryButtonText: {
+    color: "#071836",
+    fontWeight: "700",
+    fontSize: 16,
+    marginLeft: 8,
+  },
+  secondaryButton: {
+    height: 56,
+    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.15)",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  secondaryButtonText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 16,
+    marginLeft: 8,
+  },
 });
